@@ -1,0 +1,2 @@
+[22-May-2013 21:57:31 UTC] PHP Notice:  Undefined index: error in /home/talesco/public_html/admin/admin/config.php on line 24
+[22-May-2013 21:57:31 UTC] PHP Notice:  Undefined variable: nologinmsj in /home/talesco/public_html/admin/admin/config.php on line 64

@@ -1,0 +1,16 @@
+#RewriteEngine on
+
+#Rewriterule ^index/(\w+)/?$ index.php?site=$1
+
+Options +FollowSymLinks
+RewriteEngine on
+
+#1 variable
+#RewriteRule ^blog index.php?site=blog
+
+Rewriterule ^([A-Za-z0-9-]+)/?$ index.php?site=$1 [NC,L]
+
+
+
+
+#Rewriterule ^cont/?$ index.php?seccion=contacto 
