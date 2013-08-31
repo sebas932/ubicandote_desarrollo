@@ -50,7 +50,7 @@ WHERE s.idperfil=p.id AND  p.id_categoria=c.id ");
 
     <!-- **jQuery** -->
     
-  <script src="js/json2.js"></script>
+  
   <script src="js/modernizr-2.6.2.min.js"></script>
    
   <script src="js/jquery.easing.1.2.js"></script>

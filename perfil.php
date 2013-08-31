@@ -138,8 +138,7 @@
       jQuery(function($) {
         $(".promoinfo").hide();
         $("#promo").click(function () {
-        $(".promoinfo").toggle("slow");
-         
+            $(".promoinfo").toggle("slow"); 
         });
 
         function generatePages() {

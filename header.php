@@ -18,6 +18,8 @@ global $config;
     <link rel="stylesheet" href="css/avgrund.css">
     <link rel="stylesheet" href="css/simplemodal.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <link href="css/jquery.mCustomScrollbar.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="rlightbox/css/ui-lightness/jquery-ui-1.8.16.custom.css" />
+    <link type="text/css" rel="stylesheet" href="rlightbox/css/lightbox.css" /> 
     <!--[if IE 7]>
     <link rel="stylesheet" href="css/font-awesome-ie7.min.css">
     <![endif]--> 

@@ -11,17 +11,23 @@
        
 <!--        <div id="buscador"><input type="hidden" class="bigdrop" id="e6" style="width:225px" placeholder="Buscar" value="12"/> </div> -->
         <div id="publicidad"> 
+            
+            
+            <form id="solopromo" name=formpromo>
+                <input name=solopromo type=checkbox>Ver Solo Promociones
+            </form>
+            
             <div class="publicidad-slider"> 
             <ul id="publicidad-slider">
                 
-                <li>Publicidad 1
-                    <img src="images/pub1.jpg" ></li>
-                <li>Publicidad 2
-                    <img src="images/pub2.jpg" ></li>
-                <li>Publicidad 3
-                    <img src="images/pub1.jpg" ></li>
-                <li>Publicidad 4
-                    <img src="images/pub2.jpg" ></li>
+                <li>Titulo Publicidad 1
+                    <a href="images/pub1.jpg" class="lb_gallery"><img src="images/pub1.jpg" ></a></li>
+                <li>Titulo Publicidad 2
+                    <a href="images/pub2.jpg" class="lb_gallery"><img src="images/pub2.jpg" ></a></li>
+                <li>Titulo Publicidad 3
+                    <a href="images/pub1.jpg" class="lb_gallery"><img src="images/pub1.jpg" ></a></li>
+                <li>Titulo Publicidad 4
+                    <a href="images/pub2.jpg" class="lb_gallery"><img src="images/pub2.jpg" ></a></li>
             </ul>
                 </div>
         </div>
@@ -269,7 +275,7 @@
 </article><!-- **Contact Content - End** -->
 </section><!-- **Main Section** -->
 <?php include("footer.php"); ?> 
-<script type="text/javascript">
+<script type="text/javascript"> 
             //<![CDATA[ 
             var filtros = (document.getElementById("e12").value).split(",");
             var marcas = [];
@@ -278,17 +284,37 @@
             var markers;
             var map;
             var infoWindow;
+            var promocionesId;
             var customIcons = {
-<?
-$result = mysql_query("SELECT * FROM categorias WHERE 1");
-while ($row = @mysql_fetch_assoc($result)) {
-    echo $row['nombre'] . ": {  ";
-    echo "icon: '" . $row['imgicono'] . "',  ";
-    echo "shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'  ";
-    echo "},  ";
-}
-?>
-    };
+                <?
+                $result = mysql_query("SELECT * FROM categorias WHERE 1");
+                while ($row = @mysql_fetch_assoc($result)) {
+                    echo $row['nombre'] . ": {  ";
+                    echo "icon: '" . $row['imgicono'] . "',  ";
+                    echo "shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'  ";
+                    echo "},  ";
+                }
+                ?>
+            };
+            jQuery(function($) {
+                
+                
+                $( ".lb_gallery" ).rlightbox();
+                promocionesId = (function() {
+                    var promocionesId  = null;
+                    $.ajax({
+                       'async': false,
+                       'global': false,
+                       'url': 'http://guybrush.info/ubicandote/promociones-json.php?table=promociones',
+                       'dataType': "json",
+                       'success': function(data) {
+                          promocionesId  = data;
+                       }
+                    });
+                    return promocionesId ;
+                })();
+            });
+            
             var styles = [
     {
     featureType: "all",
@@ -344,7 +370,7 @@ while ($row = @mysql_fetch_assoc($result)) {
             //creaMarcasinicial(markers,map,infoWindow);
             }
             jQuery(document).ready(function ($) {
-            $('#e12').click(function () {
+            $('#e12,#solopromo').click(function () {
             borraMarkers(marcas);
                     creaMarcas(markers, map, infoWindow);
                     console.log(document.getElementById("e12").value);
@@ -364,85 +390,78 @@ while ($row = @mysql_fetch_assoc($result)) {
     }
     }
     function creaMarcasinicial(markers, map, infoWindow) {
-    for (var i = 0; i < markers.length; i++) {
-    var id = markers[i].getAttribute("id");
-            var type = markers[i].getAttribute("type");
-            var name = markers[i].getAttribute("name");
-            var address = markers[i].getAttribute("address");
-            var slogan = markers[i].getAttribute("slogan");
-            var telefonos = markers[i].getAttribute("telefonos");
-            var zona = markers[i].getAttribute("zona");
-            var imgnube = markers[i].getAttribute("imgnube");
-            var point = new google.maps.LatLng(
-            parseFloat(markers[i].getAttribute("lat")),
-            parseFloat(markers[i].getAttribute("lng")));
-            var html1 = "<p id='hook'>" + name + "</p>";
-            var html2 = "<strong>" + name + "</strong> <br/> <i>" + slogan + "</i><hr> <img id='bordeado' width='200' src='" + imgnube + "'> <br/>" + address + "<br/>" + zona + "<br/><br/> <a class='pure-button' href='perfil.php?id=" + id + "'>Ver Perfil</a>";
-            var icon = customIcons[type] || {};
-            var marker = new google.maps.Marker({
+        for (var i = 0; i < markers.length; i++) {
+            creaMarca(markers[i], map, infoWindow);
+        }
+    }
+    function creaMarca(marker, map, infoWindow) { 
+        var id = marker.getAttribute("id"); 
+        var type = marker.getAttribute("type");
+        var name = marker.getAttribute("name");
+        var address = marker.getAttribute("address");
+        var slogan = marker.getAttribute("slogan");
+        var telefonos = marker.getAttribute("telefonos");
+        var zona = marker.getAttribute("zona");
+        var imgnube = marker.getAttribute("imgnube");
+        var point = new google.maps.LatLng(parseFloat(marker.getAttribute("lat")),parseFloat(marker.getAttribute("lng")));
+
+        var html2 = "<strong>" + name + "</strong> <br/> <i>" + slogan + "</i><hr> <img id='bordeado' width='200' src='" + imgnube + "'> <br/>" + address + "<br/>" + zona + "<br/><br/> <a class='pure-button' href='perfil.php?id=" + id + "'>Ver Perfil</a>";
+        var actual = document.getElementById('listaperfiles').innerHTML;
+        document.getElementById('listaperfiles').innerHTML = actual + ("<li><img style='float:left;margin-right: 5px;border-radius: 5px;' id='bordeado' width='60' src='" + imgnube + "'>" + name + " <br> </i>" + address + "<br>" + telefonos + "<br><a href='perfil.php?id=" + id + "' class='read-more'>Ver Perfil » </a></li>")
+
+        var icon = customIcons[type] || {};
+        var marker = new google.maps.Marker({
             map: map,
             position: point,
             icon: icon.icon,
-    });
-            marcas.push(marker);
-            bindInfoWindow(marker, map, infoWindow, name, address, slogan, imgnube, zona, telefonos, id);
-            agregatales(marker, map, infoWindow, html2, name, address, slogan, imgnube, zona, telefonos, id);
+            });
+        marcas.push(marker);
+        bindInfoWindow(marker, map, infoWindow, name, address, slogan, imgnube, zona, telefonos, id, point);
+        agregatales(marker, map, infoWindow, html2, name, address, slogan, imgnube, zona, telefonos, id, point);
     }
-    }
-    function creaMarcas(markers, map, infoWindow) {
-
-    document.getElementById("infolist").style.display = "inline";
-            document.getElementById('listaperfiles').innerHTML = "";
-            for (var i = 0; i < markers.length; i++) {
-    for (var j = 0; j < (document.getElementById("e12").value).split(",").length; j++) {
-                var type = markers[i].getAttribute("type");
-                if ((document.getElementById("e12").value).split(",")[j] == type){
-                        var id = markers[i].getAttribute("id");
-                        var name = markers[i].getAttribute("name");
-                        var address = markers[i].getAttribute("address");
-                        var slogan = markers[i].getAttribute("slogan");
-                        var telefonos = markers[i].getAttribute("telefonos");
-                        var zona = markers[i].getAttribute("zona");
-                        var imgnube = markers[i].getAttribute("imgnube");
-                        var point = new google.maps.LatLng(
-                        parseFloat(markers[i].getAttribute("lat")),
-                        parseFloat(markers[i].getAttribute("lng")));
-                        var html1 = "<p id='hook'>" + name + "</p>";
-                        var html2 = "<strong>" + name + "</strong> <br/> <i>" + slogan + "</i><hr> <img id='bordeado' width='200' src='" + imgnube + "'> <br/>" + address + "<br/>" + zona + "<br/><br/> <a class='pure-button' href='perfil.php?id=" + id + "'>Ver Perfil</a>";
-                        var actual = document.getElementById('listaperfiles').innerHTML;
-                        document.getElementById('listaperfiles').innerHTML = actual + ("<li><img style='float:left;margin-right: 5px;border-radius: 5px;' id='bordeado' width='60' src='" + imgnube + "'>" + name + " <br> </i>" + address + "<br>" + telefonos + "<br><a href='perfil.php?id=" + id + "' class='read-more'>Ver Perfil » </a></li>")
-
-                        var icon = customIcons[type] || {};
-                        var marker = new google.maps.Marker({
-                        map: map,
-                        position: point,
-                        icon: icon.icon,
-                        });
-                        marcas.push(marker);
-                        bindInfoWindow(marker, map, infoWindow, name, address, slogan, imgnube, zona, telefonos, id, point);
-                        agregatales(marker, map, infoWindow, html2, name, address, slogan, imgnube, zona, telefonos, id, point);
+    function creaMarcas(markers, map, infoWindow) { 
+                document.getElementById("infolist").style.display = "inline";
+                document.getElementById('listaperfiles').innerHTML = "";
+                //alert(document.formpromo.solopromo.checked); 
+                for (var i = 0; i < markers.length; i++) {
+                    if(document.formpromo.solopromo.checked){
+                    for (var p = 0; p < promocionesId.length; p++) {
+                        var id = markers[i].getAttribute("id"); 
+                        if (promocionesId[p].idperfil == id){
+                            for (var j = 0; j < (document.getElementById("e12").value).split(",").length; j++) {
+                                var type = markers[i].getAttribute("type");
+                                if ((document.getElementById("e12").value).split(",")[j] == type){ 
+                                    creaMarca(markers[i], map, infoWindow); 
+                                }
+                            }
+                        }
+                    }
+                    }else{
+                        for (var j = 0; j < (document.getElementById("e12").value).split(",").length; j++) {
+                                var type = markers[i].getAttribute("type");
+                                if ((document.getElementById("e12").value).split(",")[j] == type){ 
+                                    creaMarca(markers[i], map, infoWindow); 
+                                }
+                        }
+                    }
                 }
-       }
-    }
     }
     function bindInfoWindow(marker, map, infoWindow, name, address, slogan, imgnube, zona, telefonos, id, point) {
-    google.maps.event.addListener(marker, 'click', function() {
-    infoWindow.setContent("<div class='nube'><img class='nube' src='" + imgnube + "'><p><b>" + name + "</b></p>" + address + "<br> " + telefonos + "<br><br><a class='pure-button' target='_blank' href='perfil.php?id=" + id + "'>Ver Perfil</a><a class='pure-button' target='_blank' href='https://maps.google.es/maps?q=%40" + point.lat() + "," + point.lng() + "&hl=es-419&t=m&z=17&daddr=%40" + point.lat() + "," + point.lng() + "'>Cómo llegar</a></div> ");
-            infoWindow.open(map, marker);
-    });
-            google.maps.event.addListener(marker, 'mouseout', function() {
-    //infoWindow.close(map, marker);
-    });
+        google.maps.event.addListener(marker, 'click', function() {
+        infoWindow.setContent("<div class='nube'><img class='nube' src='" + imgnube + "'><p><b>" + name + "</b></p>" + address + "<br> " + telefonos + "<br><br><a class='pure-button' target='_blank' href='perfil.php?id=" + id + "'>Ver Perfil</a><a class='pure-button' target='_blank' href='https://maps.google.es/maps?q=%40" + point.lat() + "," + point.lng() + "&hl=es-419&t=m&z=17&daddr=%40" + point.lat() + "," + point.lng() + "'>Cómo llegar</a></div> ");
+                infoWindow.open(map, marker);
+        });
+        google.maps.event.addListener(marker, 'mouseout', function() {
+        //infoWindow.close(map, marker);
+        });
     }
     function agregatales(marker, map, infoWindow, html, name, address, slogan, imgnube, zona, telefonos, id) {
-    google.maps.event.addListener(marker, 'click', function() {
-
-    //html = "<div style='width: 100%;  float:left'> <img class='bordeado' id='imgnube' width='100%' src='"+imgnube+"'> </div><br><div style='width: 100%;  float: left;'> <strong id='name'>"+name+"</strong> <br/>"+address+"<br/> <br> <a class='pure-button' href='perfil.php?id="+id+"'>Ver Perfil</a>";
-    //document.getElementById('barrainfo').innerHTML = html;
-
-    //window.open('./perfil.php?id=' + id, '_blank');
-    infoWindow.open(map, marker);
-    });
+        google.maps.event.addListener(marker, 'click', function() { 
+        //html = "<div style='width: 100%;  float:left'> <img class='bordeado' id='imgnube' width='100%' src='"+imgnube+"'> </div><br><div style='width: 100%;  float: left;'> <strong id='name'>"+name+"</strong> <br/>"+address+"<br/> <br> <a class='pure-button' href='perfil.php?id="+id+"'>Ver Perfil</a>";
+        //document.getElementById('barrainfo').innerHTML = html; 
+        //window.open('./perfil.php?id=' + id, '_blank');
+        infoWindow.open(map, marker);
+        });
     }
     function downloadUrl(url, callback) {
     var request = window.ActiveXObject ?
@@ -470,13 +489,15 @@ while ($row = @mysql_fetch_assoc($result)) {
     });
     }
     jQuery(document).ready(function ($) {
+        
+      
     $("#e12").select2({tags:[
-<?
-$result = mysql_query("SELECT * FROM categorias WHERE 1");
-while ($row = @mysql_fetch_assoc($result)) {
-    echo '"' . $row['nombre'] . '",';
-}
-?>
+    <?
+    $result = mysql_query("SELECT * FROM categorias WHERE 1");
+    while ($row = @mysql_fetch_assoc($result)) {
+        echo '"' . $row['nombre'] . '",';
+    }
+    ?>
     ]});
             $("#e12_open").click(function () { $("#e12").select2("open"); });
             $("#e12_close").click(function() {
@@ -532,63 +553,65 @@ echo $cat . '"';
                             jQuery('html,body').animate({ scrollTop: targetPosition}, 'slow');
                     }
 
-            jQuery(document).ready(function($) {
-            $.extend($.fn.select2.defaults, {
-            formatNoMatches: function () { return "No se encontraron resultados"; },
-                    formatInputTooShort: function (input, min) { var n = min - input.length; return "Por favor adicione " + n + " caracter" + (n == 1? "" : "es"); },
-                    formatInputTooLong: function (input, max) { var n = input.length - max; return "Por favor elimine " + n + " caracter" + (n == 1? "" : "es"); },
-                    formatSelectionTooBig: function (limit) { return "Solo puede seleccionar " + limit + " elemento" + (limit == 1 ? "" : "s"); },
-                    formatLoadMore: function (pageNumber) { return "Cargando más resultados..."; },
-                    formatSearching: function () { return "Buscando..."; }
-            });
-                    $("#e6").on("select2-selecting", function(e) {
-            //alert("selecting val="+ e.val+" choice="+ JSON.stringify(e.choice));
-            window.open('./perfil.php?id=' + e.val, '_blank');
-            });
-                    $("#e6").select2({
-            placeholder: "Buscar ...",
+                jQuery(document).ready(function($) {
+                 
+                $.extend($.fn.select2.defaults, {
+                formatNoMatches: function () { return "No se encontraron resultados"; },
+                        formatInputTooShort: function (input, min) { var n = min - input.length; return "Por favor adicione " + n + " caracter" + (n == 1? "" : "es"); },
+                        formatInputTooLong: function (input, max) { var n = input.length - max; return "Por favor elimine " + n + " caracter" + (n == 1? "" : "es"); },
+                        formatSelectionTooBig: function (limit) { return "Solo puede seleccionar " + limit + " elemento" + (limit == 1 ? "" : "s"); },
+                        formatLoadMore: function (pageNumber) { return "Cargando más resultados..."; },
+                        formatSearching: function () { return "Buscando..."; }
+                });
+                        $("#e6").on("select2-selecting", function(e) {
+                //alert("selecting val="+ e.val+" choice="+ JSON.stringify(e.choice));
+                window.open('./perfil.php?id=' + e.val, '_blank');
+                });
+                $("#e6").select2({
+                    placeholder: "Buscar ...",
                     minimumInputLength: 1,
                     ajax: {
-            url: "http://guybrush.info/ubicandote/json.php",
+                    url: "http://guybrush.info/ubicandote/json.php",
                     dataType: 'json',
                     quietMillis: 100,
                     data: function (term, page) {
-            return {
-            q: term, // search term 
-            };
-            },
+                            return {
+                            q: term, // search term 
+                            };
+                    },
                     results: function (data) { // parse the results into the format expected by Select2.
-            // since we are using custom formatting functions we do not need to alter remote JSON data
-            console.log(data);
-                    return {results: data};
-            }
-            },
+                    // since we are using custom formatting functions we do not need to alter remote JSON data
+                    console.log(data);
+                            return {results: data};
+                    }
+                    },
                     formatResult: movieFormatResult, // omitted for brevity, see the source of this page
                     formatSelection: movieFormatSelection, // omitted for brevity, see the source of this page
                     dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
                     escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
+                });
             });
-            });</script>
+</script>
 <script>
 
-                    function movieFormatResult(movie) {
-                    var markup = "<table class='movie-result'><tr>";
-                            if (movie.imgnube !== undefined && movie.posters.thumbnail !== undefined) {
-                    markup += "<td class='movie-image'></td>";
-                    }
-                    markup += "<td class='movie-info'><div class='movie-title'>" + movie.nombreperfil + "</div>";
-                            if (movie.categoria !== undefined) {
-                    markup += "<div class='movie-info'><img src='" + movie.icono + "'/>" + movie.categoria + "</div>";
-                    }
-                    else if (movie.descripcion !== undefined) {
-                    markup += "<div class='movie-synopsis'>" + movie.descripcion + "</div>";
-                    }
-                    markup += "</td></tr></table>"
-                            return markup;
-                    }
+            function movieFormatResult(movie) {
+                var markup = "<table class='movie-result'><tr>";
+                        if (movie.imgnube !== undefined && movie.posters.thumbnail !== undefined) {
+                markup += "<td class='movie-image'></td>";
+                }
+                markup += "<td class='movie-info'><div class='movie-title'>" + movie.nombreperfil + "</div>";
+                        if (movie.categoria !== undefined) {
+                markup += "<div class='movie-info'><img src='" + movie.icono + "'/>" + movie.categoria + "</div>";
+                }
+                else if (movie.descripcion !== undefined) {
+                markup += "<div class='movie-synopsis'>" + movie.descripcion + "</div>";
+                }
+                markup += "</td></tr></table>"
+                        return markup;
+            }
             function movieFormatSelection(movie) {
-            return movie.nombreperfil;
-                    console.log("movie.nombreperfil: " + movie.nombreperfil);
+                return movie.nombreperfil;
+                        console.log("movie.nombreperfil: " + movie.nombreperfil);
             }
 </script>
 

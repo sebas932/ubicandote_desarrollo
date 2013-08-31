@@ -21,14 +21,8 @@
             FROM  perfiles_categorias pc,perfiles p, categorias c 
             WHERE pc.idcategoria=c.id and pc.idperfil=p.id";
   $result = mysql_query($query);
-  if (!$result) { die('Invalid query: ' . mysql_error()); }
-
-  header("Content-type: text/xml");
-
-
-   
-
-
+  if (!$result) { die('Invalid query: ' . mysql_error()); } 
+  header("Content-type: text/xml"); 
   // Start XML file, echo parent node
  
   echo '<markers>';

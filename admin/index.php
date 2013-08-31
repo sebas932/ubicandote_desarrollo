@@ -83,7 +83,7 @@ $contenido .= '
 			<td colspan="2"><strong>Ultimos Perfiles</strong></td>
 			</tr>';
 
-			$query = mysql_query("SELECT * FROM perfiles order by id DESC limit 0,15");
+			$query = mysql_query("SELECT * FROM perfiles order by id DESC limit 0,20");
 			while($articulo=mysql_fetch_array($query)) {
 				$contenido .= '
 				<tr>
@@ -103,12 +103,12 @@ $contenido .= '
 			<td colspan="2"><strong>Ultimas Promociones</strong></td>
 			</tr>';
 
-			$query = mysql_query("SELECT * FROM promociones");
+			$query = mysql_query("SELECT * FROM promociones limit 0,10");
 			while($articulo=mysql_fetch_array($query)) {
 				$contenido .= '
 				<tr>
 				<td>'.$articulo['id'].'</td>
-				<td><a href="#" rel="popover" title="'.$articulo['idperfil'].'" data-content="">'.$articulo['promocion'].'</a> '.$articulo['fechaini'].'</td>
+				<td><a href="#" rel="popover" title="'.$articulo['idperfil'].'" data-content=""><div style="width: 90px;">'.$articulo['promocion'].'</div></a> '.$articulo['fechaini'].'</td>
 				</tr>
 				';
 			}
