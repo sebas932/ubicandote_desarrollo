@@ -1,7 +1,7 @@
 <?php if(!$_POST) exit;
-	$to 		= "test@test.com";
-	$email 		= $_POST['email'];
-	$name 		= $_POST['name'];
+	$to 		= "sebas932@gmail.com";
+	$email 		= "contacto@talessoft.co";
+	$name 		= "sdfasdfasdf";
 	$message	= $_POST['message'];
 	
 	$subject 	= "You've been contacted by $name";
